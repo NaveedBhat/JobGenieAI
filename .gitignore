@@ -8,3 +8,4 @@
 !assets/**
 !README.md
 !.gitignore
+!vercel.json

@@ -7,7 +7,7 @@
 
 *An autonomous AI workflow that analyzes your resume against a job description, provides skill gap reports, ATS scoring, and generates an optimized DOCX resume — entirely for free.*
 
-<h3>🌐 <a href="https://jobgenieai.vercel.app/" target="_blank">Try JobGenieAI Live!</a></h3>
+<h3>🌐 <a href="https://jobgenieai.vercel.app/" target="_blank">JobGenieAI Live!</a></h3>
 
 ![Status](https://img.shields.io/badge/Status-Active-brightgreen?style=flat-square)
 ![Platform](https://img.shields.io/badge/Platform-n8n-orange?style=flat-square)

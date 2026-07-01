@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JobGenieAI — AI Resume Analyzer &amp; Job Finder</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="favicon_io/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="favicon_io/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="favicon_io/favicon-16x16.png">
+  <link rel="manifest" href="favicon_io/site.webmanifest">
+  <meta name="description" content="Upload your resume, paste a job description — get ATS score, skill gap analysis, optimized resume download, and similar job listings instantly." />
+  <meta name="theme-color" content="#05070f" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <!-- PizZip: client-side DOCX rebuild (no server needed) -->
+  <script src="https://cdn.jsdelivr.net/npm/pizzip@3.1.4/dist/pizzip.min.js"></script>
+</head>
+<body>
+
+  <!-- ── Ambient background orb (decorative, no JS) ── -->
+  <div class="bg-orb" aria-hidden="true"></div>
+
+  <!-- ── HEADER ──────────────────────────────────────────────── -->
+  <header class="header">
+    <div class="container">
+      <div class="logo" style="display: flex; align-items: center; gap: 10px;">
+        <img src="JG_LOGO.png" alt="JobGenieAI Logo" class="logo-img" width="36" height="36" style="display: inline-block;" />
+        <span class="logo-text">JobGenie<span class="logo-accent">AI</span></span>
+      </div>
+      <nav class="nav">
+        <a href="#how-it-works" class="nav-link">How it works</a>
+        <a href="#analyzer" class="nav-link">Analyze Resume</a>
+        <span class="nav-badge">Free · No signup</span>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ── HERO ────────────────────────────────────────────────── -->
+  <section class="hero">
+    <!-- Decorative grid overlay (no JS) -->
+    <div class="hero-grid" aria-hidden="true"></div>
+    <div class="container" style="display: flex; flex-direction: column; align-items: center;">
+      <img src="JG_LOGO.png" alt="JobGenieAI Emblem" style="width: 220px; height: 220px; object-fit: contain; margin-bottom: 24px; filter: drop-shadow(0 0 24px rgba(167,139,250,0.4));" />
+      <h1 class="hero-title">
+        Stop guessing.<br />
+        <span class="hero-accent">Know your match.</span>
+      </h1>
+      <p class="hero-sub">
+        Upload your resume, paste the job description — get a precise ATS score,
+        skill gap report, an optimized DOCX download, and similar job listings in under 30 seconds.
+      </p>
+      <div class="hero-stats">
+        <div class="stat"><span class="stat-num">5</span><span class="stat-label">Analysis modules</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">100%</span><span class="stat-label">Free to use</span></div>
+        <div class="stat-divider"></div>
+        <div class="stat"><span class="stat-num">0</span><span class="stat-label">Data stored</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── HOW IT WORKS ─────────────────────────────────────────── -->
+  <section class="how-it-works" id="how-it-works">
+    <div class="container">
+      <h2 class="section-title">How it works</h2>
+      <p class="section-sub">Four simple steps to a stronger application.</p>
+      <div class="steps">
+        <div class="step">
+          <div class="step-icon">📄</div>
+          <div class="step-content">
+            <h3>Upload Resume</h3>
+            <p>PDF or DOCX — your resume is parsed client-side, text is sent securely.</p>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-icon">📋</div>
+          <div class="step-content">
+            <h3>Paste Job Description</h3>
+            <p>Copy the full job posting. The more detail, the better the analysis.</p>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-icon">🤖</div>
+          <div class="step-content">
+            <h3>AI Analyzes</h3>
+            <p>Gemini 2.0 Flash (with Groq fallback) runs a 5-module deep analysis.</p>
+          </div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step">
+          <div class="step-icon">✨</div>
+          <div class="step-content">
+            <h3>Get Results + Download</h3>
+            <p>Match score, ATS report, optimized DOCX download, and similar job listings.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ANALYZER FORM ─────────────────────────────────────────── -->
+  <section class="analyzer-section" id="analyzer">
+    <div class="container">
+      <div class="analyzer-header">
+        <h2 class="section-title">Analyze your resume</h2>
+        <p class="section-sub">Your data is processed securely and never stored.</p>
+      </div>
+
+      <div class="analyzer-layout">
+
+        <!-- LEFT: INPUTS -->
+        <div class="input-panel">
+
+          <!-- Resume Upload -->
+          <div class="input-card" id="upload-card">
+            <div class="card-header">
+              <span class="card-num">01</span>
+              <h3>Resume</h3>
+              <span class="card-format">PDF or DOCX</span>
+            </div>
+
+            <div class="upload-zone" id="upload-zone">
+              <input type="file" id="resume-file" accept=".pdf,.doc,.docx" hidden />
+              <div class="upload-idle" id="upload-idle">
+                <div class="upload-icon">⬆</div>
+                <p class="upload-title">Drop your resume here</p>
+                <p class="upload-sub">or <button class="upload-browse" id="browse-btn">browse files</button></p>
+                <p class="upload-hint">PDF or DOCX · Max 10 MB · DOCX enables template-preserved download</p>
+              </div>
+              <div class="upload-success hidden" id="upload-success">
+                <div class="upload-file-icon">📄</div>
+                <div class="upload-file-info">
+                  <p class="upload-file-name" id="file-name-display">resume.pdf</p>
+                  <p class="upload-file-meta" id="file-meta-display">Ready to analyze</p>
+                </div>
+                <button class="upload-remove" id="remove-file">✕</button>
+              </div>
+            </div>
+
+            <!-- Paste fallback -->
+            <div class="paste-toggle">
+              <button class="paste-toggle-btn" id="toggle-paste">
+                <span id="toggle-paste-text">Or paste resume text instead</span>
+                <span class="toggle-arrow" id="toggle-arrow">▾</span>
+              </button>
+            </div>
+            <div class="paste-area hidden" id="paste-area">
+              <textarea
+                id="resume-paste"
+                class="textarea"
+                rows="10"
+                placeholder="Paste your resume text here if you prefer not to upload a file..."
+              ></textarea>
+            </div>
+          </div>
+
+          <!-- Job Description -->
+          <div class="input-card">
+            <div class="card-header">
+              <span class="card-num">02</span>
+              <h3>Job Description</h3>
+              <span class="card-format">Paste full text</span>
+            </div>
+            <textarea
+              id="job-description"
+              class="textarea"
+              rows="12"
+              placeholder="Paste the complete job description here — include responsibilities, requirements, and qualifications for best results..."
+            ></textarea>
+            <div class="char-counter" id="jd-counter">0 / 10,000 characters</div>
+          </div>
+
+          <!-- Submit -->
+          <button class="analyze-btn" id="analyze-btn" disabled>
+            <span class="analyze-btn-text" id="btn-text">Analyze Resume</span>
+            <span class="analyze-btn-icon" id="btn-icon">→</span>
+          </button>
+
+          <p class="analyze-note" id="analyze-note">Upload a resume and paste a job description to get started.</p>
+        </div>
+
+        <!-- RIGHT: RESULTS -->
+        <div class="results-panel" id="results-panel" aria-live="polite">
+
+          <!-- Empty state -->
+          <div class="results-empty" id="results-empty">
+            <div class="empty-icon">✦</div>
+            <h3>Your analysis will appear here</h3>
+            <p>Fill in your resume and job description, then click Analyze.</p>
+          </div>
+
+          <!-- Loading -->
+          <div class="results-loading hidden" id="results-loading">
+            <div class="loading-orb"></div>
+            <h3 id="loading-title">Analyzing your resume…</h3>
+            <p id="loading-sub">Running 5 analysis modules</p>
+            <div class="loading-steps">
+              <div class="loading-step" id="ls-1">⬜ Extracting skills &amp; keywords</div>
+              <div class="loading-step" id="ls-2">⬜ Calculating match score</div>
+              <div class="loading-step" id="ls-3">⬜ Running ATS compatibility check</div>
+              <div class="loading-step" id="ls-4">⬜ Generating optimized resume</div>
+              <div class="loading-step" id="ls-5">⬜ Compiling analysis report</div>
+            </div>
+          </div>
+
+          <!-- Results -->
+          <div class="results-content hidden" id="results-content">
+
+            <!-- Score Hero -->
+            <div class="score-hero" id="score-hero">
+              <div class="score-ring-wrap">
+                <svg class="score-ring" viewBox="0 0 120 120">
+                  <circle class="ring-bg" cx="60" cy="60" r="52" />
+                  <circle class="ring-fill" id="ring-fill" cx="60" cy="60" r="52"
+                    stroke-dasharray="326.7" stroke-dashoffset="326.7" />
+                </svg>
+                <div class="score-center">
+                  <span class="score-number" id="score-number">0</span>
+                  <span class="score-pct">%</span>
+                </div>
+              </div>
+              <div class="score-info">
+                <div class="score-verdict" id="score-verdict">—</div>
+                <div class="score-rationale" id="score-rationale">—</div>
+                <div class="score-meta">
+                  <span class="score-provider" id="score-provider">—</span>
+                  <span class="score-shortlist" id="score-shortlist">—</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab Nav -->
+            <div class="tabs">
+              <button class="tab active" data-tab="skills">Skills</button>
+              <button class="tab" data-tab="ats">ATS</button>
+              <button class="tab" data-tab="resume">Optimized</button>
+              <button class="tab" data-tab="report">Report</button>
+              <button class="tab" data-tab="jobs">Similar Jobs</button>
+            </div>
+
+            <!-- Tab: Skills -->
+            <div class="tab-content active" id="tab-skills">
+              <div class="skill-grid">
+                <div class="skill-col green">
+                  <h4 class="skill-col-title">✅ Matching Skills</h4>
+                  <div class="skill-tags" id="matching-skills"></div>
+                </div>
+                <div class="skill-col red">
+                  <h4 class="skill-col-title">❌ Missing Skills</h4>
+                  <div class="skill-tags" id="missing-skills"></div>
+                </div>
+                <div class="skill-col yellow">
+                  <h4 class="skill-col-title">⚡ Critical Missing</h4>
+                  <div class="skill-tags" id="critical-skills"></div>
+                </div>
+                <div class="skill-col blue">
+                  <h4 class="skill-col-title">🎯 Bonus Skills</h4>
+                  <div class="skill-tags" id="bonus-skills"></div>
+                </div>
+              </div>
+
+              <div class="keyword-section">
+                <h4 class="sub-section-title">Keyword Analysis</h4>
+                <div class="keyword-score-bar">
+                  <span class="keyword-label">Keyword Density</span>
+                  <div class="progress-bar-wrap">
+                    <div class="progress-bar" id="keyword-bar"></div>
+                  </div>
+                  <span class="keyword-score-val" id="keyword-score-val">0%</span>
+                </div>
+                <p class="keyword-suggestion" id="keyword-suggestion"></p>
+
+                <div class="keyword-groups">
+                  <div>
+                    <h5>Matched Keywords</h5>
+                    <div class="keyword-tags" id="matched-keywords"></div>
+                  </div>
+                  <div>
+                    <h5>Missing Keywords</h5>
+                    <div class="keyword-tags missing" id="missing-keywords"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="experience-section">
+                <h4 class="sub-section-title">Experience Analysis</h4>
+                <div class="exp-grid">
+                  <div class="exp-card">
+                    <span class="exp-label">Required</span>
+                    <span class="exp-val" id="exp-required">—</span>
+                  </div>
+                  <div class="exp-card">
+                    <span class="exp-label">Your Experience</span>
+                    <span class="exp-val" id="exp-candidate">—</span>
+                  </div>
+                  <div class="exp-card">
+                    <span class="exp-label">Level Match</span>
+                    <span class="exp-val" id="exp-level">—</span>
+                  </div>
+                  <div class="exp-card">
+                    <span class="exp-label">Role Alignment</span>
+                    <span class="exp-val" id="exp-alignment">—</span>
+                  </div>
+                </div>
+                <p class="exp-notes" id="exp-notes"></p>
+              </div>
+            </div>
+
+            <!-- Tab: ATS -->
+            <div class="tab-content" id="tab-ats">
+              <div class="ats-hero">
+                <div class="ats-score-wrap">
+                  <div class="ats-score-num" id="ats-score-num">0</div>
+                  <div class="ats-score-label">ATS Score</div>
+                </div>
+                <div class="ats-pass" id="ats-pass">—</div>
+              </div>
+
+              <div class="ats-breakdown">
+                <h4 class="sub-section-title">Score Breakdown</h4>
+                <div class="ats-bars">
+                  <div class="ats-bar-row">
+                    <span>Formatting</span>
+                    <div class="progress-bar-wrap"><div class="progress-bar ats-bar" id="ats-fmt"></div></div>
+                    <span id="ats-fmt-val" class="bar-val">0/25</span>
+                  </div>
+                  <div class="ats-bar-row">
+                    <span>Keywords</span>
+                    <div class="progress-bar-wrap"><div class="progress-bar ats-bar" id="ats-kw"></div></div>
+                    <span id="ats-kw-val" class="bar-val">0/25</span>
+                  </div>
+                  <div class="ats-bar-row">
+                    <span>Sections</span>
+                    <div class="progress-bar-wrap"><div class="progress-bar ats-bar" id="ats-sec"></div></div>
+                    <span id="ats-sec-val" class="bar-val">0/25</span>
+                  </div>
+                  <div class="ats-bar-row">
+                    <span>Readability</span>
+                    <div class="progress-bar-wrap"><div class="progress-bar ats-bar" id="ats-read"></div></div>
+                    <span id="ats-read-val" class="bar-val">0/25</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="issues-fixes">
+                <div class="issue-col">
+                  <h4 class="sub-section-title">⚠ Issues Found</h4>
+                  <ul class="issue-list" id="ats-issues"></ul>
+                </div>
+                <div class="issue-col">
+                  <h4 class="sub-section-title">✅ How to Fix</h4>
+                  <ul class="fix-list" id="ats-fixes"></ul>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Optimized Resume -->
+            <div class="tab-content" id="tab-resume">
+              <div class="opt-section">
+                <h4 class="sub-section-title">Optimized Summary</h4>
+                <div class="opt-summary-box" id="opt-summary"></div>
+              </div>
+
+              <div class="opt-section">
+                <h4 class="sub-section-title">Suggested Improvements</h4>
+                <div class="improvements-list" id="improvements-list"></div>
+              </div>
+
+              <div class="opt-section">
+                <h4 class="sub-section-title">Keywords to Weave In</h4>
+                <div class="keyword-tags green" id="keywords-to-add"></div>
+              </div>
+
+              <div class="opt-section" id="sections-to-add-wrap">
+                <h4 class="sub-section-title">Sections to Add</h4>
+                <div class="keyword-tags blue" id="sections-to-add"></div>
+              </div>
+
+              <div class="opt-disclaimer">
+                <span>ℹ</span>
+                All suggestions preserve factual accuracy. No information is fabricated.
+              </div>
+            </div>
+
+            <!-- Tab: Report -->
+            <div class="tab-content" id="tab-report">
+              <div class="report-grid">
+                <div class="report-card strengths">
+                  <h4>💪 Strengths</h4>
+                  <ul id="report-strengths"></ul>
+                </div>
+                <div class="report-card weaknesses">
+                  <h4>🔍 Weaknesses</h4>
+                  <ul id="report-weaknesses"></ul>
+                </div>
+              </div>
+
+              <div class="report-card missing-req">
+                <h4>📋 Missing Requirements</h4>
+                <ul id="report-missing"></ul>
+              </div>
+
+              <div class="report-card quick-wins">
+                <h4>⚡ Quick Wins (Top 3 Changes)</h4>
+                <ol id="report-quick"></ol>
+              </div>
+
+              <div class="report-card recommendations">
+                <h4>🎯 Prioritized Recommendations</h4>
+                <ol id="report-recs"></ol>
+              </div>
+
+              <div class="shortlist-verdict" id="shortlist-verdict">
+                <div class="verdict-badge" id="verdict-badge">—</div>
+                <div class="verdict-text">
+                  <strong>Shortlist Probability</strong>
+                  <p id="verdict-rationale">—</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tab: Similar Jobs -->
+            <div class="tab-content" id="tab-jobs">
+              <!-- Loading -->
+              <div class="jobs-loading" id="jobs-loading">
+                <div class="jobs-spinner"></div>
+                <p>Finding similar jobs for you…</p>
+              </div>
+              <!-- Content -->
+              <div class="jobs-content hidden" id="jobs-content">
+                <p class="jobs-query-label" id="jobs-query-label"></p>
+                <!-- Platform quick-search strip -->
+                <div class="platform-strip" id="platform-strip">
+                  <a class="platform-btn platform-linkedin" id="link-linkedin" href="#" target="_blank" rel="noopener">
+                    <span class="platform-icon">in</span>LinkedIn
+                  </a>
+                  <a class="platform-btn platform-naukri" id="link-naukri" href="#" target="_blank" rel="noopener">
+                    <span class="platform-icon">N</span>Naukri
+                  </a>
+                  <a class="platform-btn platform-indeed" id="link-indeed" href="#" target="_blank" rel="noopener">
+                    <span class="platform-icon">i</span>Indeed
+                  </a>
+                  <a class="platform-btn platform-google" id="link-google" href="#" target="_blank" rel="noopener">
+                    <span class="platform-icon">G</span>Google Jobs
+                  </a>
+                  <a class="platform-btn platform-glassdoor" id="link-glassdoor" href="#" target="_blank" rel="noopener">
+                    <span class="platform-icon">gd</span>Glassdoor
+                  </a>
+                </div>
+                <!-- Job cards -->
+                <div class="job-cards" id="job-cards"></div>
+              </div>
+              <!-- No-results state -->
+              <div class="jobs-empty hidden" id="jobs-empty">
+                <div class="empty-icon" style="font-size:1.8rem;opacity:.3">🔍</div>
+                <p style="color:var(--muted);font-size:.85rem;margin-top:10px">No listings returned. Use the platform links above to search directly.</p>
+              </div>
+            </div>
+
+            <!-- ── DOWNLOAD OPTIMIZED RESUME ── -->
+            <div class="download-section hidden" id="download-section">
+              <div class="download-building hidden" id="download-building">
+                <div class="download-spinner"></div>
+                <span>Building your optimized resume…</span>
+              </div>
+              <div class="download-ready hidden" id="download-ready">
+                <div class="download-info">
+                  <span class="download-badge">✨ Optimized</span>
+                  <div class="download-text">
+                    <strong id="download-filename">resume_optimized.docx</strong>
+                    <span id="download-sublabel">Rewritten to match this job description</span>
+                  </div>
+                </div>
+                <button class="download-btn" id="download-btn">⬇ Download DOCX</button>
+              </div>
+              <div class="download-error hidden" id="download-error" style="display: flex; align-items: center; gap: 16px; width: 100%;">
+                <div class="download-info">
+                  <span class="download-badge" style="background: rgba(239,68,68,.15); color: #ef4444; border-color: rgba(239,68,68,.3);">Failed</span>
+                  <div class="download-text">
+                    <strong style="color: #f87171;">Optimization Failed</strong>
+                    <span id="download-error-text">API error</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="result-actions">
+              <button class="action-btn primary" id="copy-json">Copy Full JSON Report</button>
+              <button class="action-btn secondary" id="analyze-again">Analyze Another</button>
+            </div>
+
+          </div><!-- /results-content -->
+
+          <!-- Error state -->
+          <div class="results-error hidden" id="results-error">
+            <div class="error-icon">⚠</div>
+            <h3>Analysis failed</h3>
+            <p id="error-message">Something went wrong. Please try again.</p>
+            <button class="action-btn secondary" id="retry-btn">Try Again</button>
+          </div>
+
+        </div><!-- /results-panel -->
+      </div><!-- /analyzer-layout -->
+    </div>
+  </section>
+
+  <!-- ── FOOTER ─────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-inner">
+        <div class="footer-logo" style="display: flex; align-items: center; justify-content: center; gap: 10px; margin: 0 auto;">
+          <img src="JG_LOGO.png" alt="JobGenieAI Logo" class="logo-img" width="36" height="36" style="display: inline-block;" />
+          <span class="logo-text">JobGenie<span class="logo-accent">AI</span></span>
+        </div>
+        <p class="footer-note">
+          Designed &amp; Developed by Naveed Mohammad Bhat
+        </p>
+        <p class="footer-disclaimer">
+          JobGenieAI is an AI analysis tool. Results are suggestions, not guarantees.
+          Always verify accuracy before submitting applications.
+        </p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

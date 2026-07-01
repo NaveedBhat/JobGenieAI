@@ -1,0 +1,10 @@
+# Ignore everything by default
+*
+
+# Except these directories and files
+!frontend/
+!frontend/**
+!assets/
+!assets/**
+!README.md
+!.gitignore
